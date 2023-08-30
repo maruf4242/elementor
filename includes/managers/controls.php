@@ -746,6 +746,9 @@ class Controls_Manager {
 		$this->stacks[ $stack_id ] = [
 			'tabs' => [],
 			'controls' => [],
+			'creation_modes' => [
+				'responsive' => Plugin::$instance->breakpoints->get_responsive_control_duplication_mode(),
+			],
 		];
 	}
 
@@ -999,6 +1002,17 @@ class Controls_Manager {
 		$stack_id = $controls_stack->get_unique_name();
 
 		if ( ! isset( $this->stacks[ $stack_id ] ) ) {
+			return null;
+		}
+
+		$responsive_mode = Plugin::$instance->breakpoints->get_responsive_control_duplication_mode();
+
+		if (
+			isset( $this->stacks[ $stack_id ]['creation_modes']['responsive'] ) &&
+			'off' === $this->stacks[ $stack_id ]['creation_modes']['responsive'] &&
+			$responsive_mode !== $this->stacks[ $stack_id ]['creation_modes']['responsive']
+		) {
+			$this->delete_stack( $controls_stack );
 			return null;
 		}
 
